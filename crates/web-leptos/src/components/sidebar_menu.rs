@@ -1,11 +1,13 @@
 use leptos::prelude::*;
 use leptos_router::components::A;
 
+use crate::features::auth::AuthContext;
 use crate::shared::shell_navigation::main_nav_items;
 
 #[component]
 pub fn SidebarMenu(open: RwSignal<bool>) -> impl IntoView {
-    let items = main_nav_items();
+    let auth = AuthContext::use_ctx();
+    let items = Memo::new(move |_| main_nav_items(auth.is_authenticated()));
 
     view! {
         <aside
@@ -16,7 +18,7 @@ pub fn SidebarMenu(open: RwSignal<bool>) -> impl IntoView {
         >
             <nav class="flex flex-col gap-1 p-4">
                 <For
-                    each=move || items.clone()
+                    each=move || items.get()
                     key=|item| item.href
                     children=move |item| view! {
                         <A href=item.href>

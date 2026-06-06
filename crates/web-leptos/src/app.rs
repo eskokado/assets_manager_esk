@@ -3,24 +3,75 @@ use leptos_meta::*;
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::path;
 
+#[cfg(feature = "ssr")]
+use leptos::hydration::{AutoReload, HydrationScripts};
+#[cfg(feature = "ssr")]
+use leptos_config::LeptosOptions;
+
+use crate::features::auth::{AuthProvider, RequireAuth};
 use crate::layouts::AdminShell;
-use crate::pages::{dashboard::DashboardPage, examples::ExamplesPage};
+use crate::pages::{
+    dashboard::DashboardPage, examples::ExamplesPage, login::LoginPage, profile::ProfilePage,
+    register::RegisterPage,
+};
+
+#[cfg(feature = "ssr")]
+pub fn shell(options: LeptosOptions) -> impl IntoView {
+    view! {
+        <!DOCTYPE html>
+        <html lang="pt-BR" class="dark">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <AutoReload options=options.clone() />
+                <HydrationScripts options=options />
+                <MetaTags/>
+            </head>
+            <body>
+                <App/>
+            </body>
+        </html>
+    }
+}
+
+#[component]
+fn PrivateShell(children: Children) -> impl IntoView {
+    view! {
+        <RequireAuth>
+            <AdminShell>{children()}</AdminShell>
+        </RequireAuth>
+    }
+}
 
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Html attr:lang="pt-BR" attr:class="dark" />
         <Stylesheet id="leptos" href="/pkg/web-leptos.css"/>
         <Title text="Assets Manage"/>
-        <Router>
-            <AdminShell>
+        <AuthProvider>
+            <Router>
                 <Routes fallback=|| view! { <p class="p-8">"Página não encontrada"</p> }>
-                    <Route path=path!("/") view=DashboardPage/>
-                    <Route path=path!("/examples") view=ExamplesPage/>
+                    <Route path=path!("/login") view=LoginPage/>
+                    <Route path=path!("/register") view=RegisterPage/>
+                    <Route path=path!("/") view=move || view! {
+                        <PrivateShell>
+                            <DashboardPage/>
+                        </PrivateShell>
+                    }/>
+                    <Route path=path!("/examples") view=move || view! {
+                        <PrivateShell>
+                            <ExamplesPage/>
+                        </PrivateShell>
+                    }/>
+                    <Route path=path!("/profile") view=move || view! {
+                        <PrivateShell>
+                            <ProfilePage/>
+                        </PrivateShell>
+                    }/>
                 </Routes>
-            </AdminShell>
-        </Router>
+            </Router>
+        </AuthProvider>
     }
 }

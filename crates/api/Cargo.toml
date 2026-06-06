@@ -19,6 +19,10 @@ serde_json = { workspace = true }
 sqlx = { workspace = true }
 dotenvy = { workspace = true }
 uuid = { workspace = true }
+async-trait = { workspace = true }
+chrono = { workspace = true }
+bcrypt = { workspace = true }
+jsonwebtoken = { workspace = true }
 
 [dev-dependencies]
 reqwest = { version = "0.12", features = ["json"] }

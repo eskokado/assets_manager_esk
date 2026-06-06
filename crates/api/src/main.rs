@@ -20,7 +20,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = sqlx::PgPool::connect(&settings.database_url).await?;
     api::db::run_migrations(&db).await?;
 
-    let state = AppState { db };
+    let state = AppState {
+        db,
+        jwt_secret: settings.jwt_secret,
+        jwt_expires_in_secs: settings.jwt_expires_in_secs,
+    };
     let app = router(state);
 
     let addr: SocketAddr = settings.bind_addr.parse()?;
