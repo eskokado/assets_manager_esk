@@ -1,0 +1,3 @@
+[submodule ".agents/skills"]
+	path = .agents/skills
+	url = git@github.com:EskCti/skills-ddd-clean-cursor.git
