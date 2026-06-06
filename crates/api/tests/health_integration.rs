@@ -12,7 +12,11 @@ async fn health_returns_ok() {
         .connect_lazy("postgres://postgres:postgres@localhost:5432/appdb")
         .expect("lazy pool");
 
-    let app = router(AppState { db: pool });
+    let app = router(AppState {
+        db: pool,
+        jwt_secret: "test-secret-key-at-least-32-chars!!".into(),
+        jwt_expires_in_secs: 3600,
+    });
 
     let response = app
         .oneshot(
