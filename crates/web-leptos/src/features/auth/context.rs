@@ -1,8 +1,7 @@
 use leptos::prelude::*;
 
 use crate::features::auth::domain::AuthSession;
-
-const STORAGE_KEY: &str = "assets_manage_auth_session";
+use crate::features::auth::session_storage;
 
 #[derive(Clone, Copy)]
 pub struct AuthContext {
@@ -13,7 +12,9 @@ impl AuthContext {
     pub fn provide() -> Self {
         let session = RwSignal::new(None::<AuthSession>);
         let ctx = Self { session };
-        ctx.hydrate_from_storage();
+        if let Some(stored) = session_storage::load_session() {
+            session.set(Some(stored));
+        }
         provide_context(ctx);
         ctx
     }
@@ -36,59 +37,13 @@ impl AuthContext {
     }
 
     pub fn set_session(&self, session: AuthSession) {
-        self.session.set(Some(session.clone()));
-        if let Some(window) = web_sys::window() {
-            if let Ok(Some(storage)) = window.local_storage() {
-                let _ = storage.set_item(
-                    STORAGE_KEY,
-                    &serde_json::json!({
-                        "access_token": session.access_token(),
-                        "expires_in": session.expires_in(),
-                        "user_id": session.user_id(),
-                        "role": session.role(),
-                    })
-                    .to_string(),
-                );
-            }
-        }
+        session_storage::save_session(&session);
+        self.session.set(Some(session));
     }
 
     pub fn clear(&self) {
+        session_storage::clear_session();
         self.session.set(None);
-        if let Some(window) = web_sys::window() {
-            if let Ok(Some(storage)) = window.local_storage() {
-                let _ = storage.remove_item(STORAGE_KEY);
-            }
-        }
-    }
-
-    fn hydrate_from_storage(&self) {
-        let Some(window) = web_sys::window() else {
-            return;
-        };
-        let Ok(Some(storage)) = window.local_storage() else {
-            return;
-        };
-        let Ok(Some(raw)) = storage.get_item(STORAGE_KEY) else {
-            return;
-        };
-        if let Ok(value) = serde_json::from_str::<serde_json::Value>(&raw) {
-            if let (Some(token), Some(expires), Some(user_id), Some(role)) = (
-                value.get("access_token").and_then(|v| v.as_str()),
-                value.get("expires_in").and_then(|v| v.as_i64()),
-                value.get("user_id").and_then(|v| v.as_str()),
-                value.get("role").and_then(|v| v.as_str()),
-            ) {
-                if let shared_kernel::Result::Ok(session) = AuthSession::try_new(
-                    token.to_string(),
-                    expires,
-                    user_id.to_string(),
-                    role.to_string(),
-                ) {
-                    self.session.set(Some(session));
-                }
-            }
-        }
     }
 }
 

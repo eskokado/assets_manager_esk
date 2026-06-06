@@ -3,12 +3,36 @@ use leptos_meta::*;
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::path;
 
+#[cfg(feature = "ssr")]
+use leptos::hydration::{AutoReload, HydrationScripts};
+#[cfg(feature = "ssr")]
+use leptos_config::LeptosOptions;
+
 use crate::features::auth::{AuthProvider, RequireAuth};
 use crate::layouts::AdminShell;
 use crate::pages::{
     dashboard::DashboardPage, examples::ExamplesPage, login::LoginPage, profile::ProfilePage,
     register::RegisterPage,
 };
+
+#[cfg(feature = "ssr")]
+pub fn shell(options: LeptosOptions) -> impl IntoView {
+    view! {
+        <!DOCTYPE html>
+        <html lang="pt-BR" class="dark">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <AutoReload options=options.clone() />
+                <HydrationScripts options=options />
+                <MetaTags/>
+            </head>
+            <body>
+                <App/>
+            </body>
+        </html>
+    }
+}
 
 #[component]
 fn PrivateShell(children: Children) -> impl IntoView {
@@ -24,7 +48,6 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Html attr:lang="pt-BR" attr:class="dark" />
         <Stylesheet id="leptos" href="/pkg/web-leptos.css"/>
         <Title text="Assets Manage"/>
         <AuthProvider>

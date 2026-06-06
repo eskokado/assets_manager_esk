@@ -35,7 +35,8 @@ impl Default for AuthHttpRepository {
     }
 }
 
-#[async_trait]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 impl AuthRepository for AuthHttpRepository {
     async fn login(&self, email: &str, password: &str) -> Result<AuthSession> {
         let url = format!("{}/api/auth/login", self.base_url);

@@ -24,3 +24,10 @@ chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.16"
 jsonwebtoken = "9"
 shared-kernel = { path = "crates/shared-kernel" }
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
