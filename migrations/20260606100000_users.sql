@@ -10,13 +10,13 @@ CREATE TABLE users (
 
 CREATE INDEX idx_users_email ON users (email);
 
--- Dev seed: admin@assets.local / Admin1234
+-- Dev seed: admin@assets.local / Senha@12345678
 INSERT INTO users (id, name, email, password_hash, role, active, created_at)
 VALUES (
     '00000000-0000-4000-8000-000000000001',
     'Admin',
     'admin@assets.local',
-    '$2b$12$bb9Mv0IjWA27.6Dk8CgeteyJJNy/DG6I0/TrGjBLn1NOHvzkYLWXe',
+    '$2b$12$bFSrLmoJVBlhzViZypM9OuYaerhHwLqSkn998eU/woN1dW7boe8Z.',
     'admin',
     TRUE,
     NOW()
