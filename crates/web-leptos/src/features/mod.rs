@@ -1,1 +1,2 @@
-// Bounded Contexts: pub mod customers;
+// Bounded Contexts
+pub mod auth;

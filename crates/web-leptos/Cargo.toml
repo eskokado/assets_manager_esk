@@ -26,6 +26,7 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 shared-kernel = { workspace = true }
 async-trait = { workspace = true }
+web-sys = { version = "0.3", features = ["Window", "Storage"] }
 cfg-if = "1"
 
 [features]
