@@ -14,8 +14,7 @@ impl Settings {
             bind_addr: env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:4000".into()),
             database_url: env::var("DATABASE_URL")
                 .map_err(|_| "DATABASE_URL is required".to_string())?,
-            jwt_secret: env::var("JWT_SECRET")
-                .map_err(|_| "JWT_SECRET is required".to_string())?,
+            jwt_secret: env::var("JWT_SECRET").map_err(|_| "JWT_SECRET is required".to_string())?,
             jwt_expires_in_secs: env::var("JWT_EXPIRES_IN_SECS")
                 .ok()
                 .and_then(|v| v.parse().ok())
