@@ -27,18 +27,17 @@ impl<T> Result<T> {
         matches!(self, Self::Err(_))
     }
 
-    pub fn errors(&self) -> &[DomainError] {
-        match self {
-            Self::Ok(_) => &[],
-            Self::Err(errors) => errors.as_slice(),
-        }
-    }
-
-    #[cfg(test)]
     pub fn unwrap(self) -> T {
         match self {
             Self::Ok(value) => value,
             Self::Err(errors) => panic!("called Result::unwrap on Err: {errors:?}"),
+        }
+    }
+
+    pub fn errors(&self) -> &[DomainError] {
+        match self {
+            Self::Ok(_) => &[],
+            Self::Err(errors) => errors.as_slice(),
         }
     }
 }
