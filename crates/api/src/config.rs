@@ -15,7 +15,7 @@ impl Settings {
             database_url: env::var("DATABASE_URL")
                 .map_err(|_| "DATABASE_URL is required".to_string())?,
             jwt_secret: env::var("JWT_SECRET")
-                .unwrap_or_else(|_| "dev-secret-change-me-at-least-32-chars".into()),
+                .map_err(|_| "JWT_SECRET is required".to_string())?,
             jwt_expires_in_secs: env::var("JWT_EXPIRES_IN_SECS")
                 .ok()
                 .and_then(|v| v.parse().ok())
