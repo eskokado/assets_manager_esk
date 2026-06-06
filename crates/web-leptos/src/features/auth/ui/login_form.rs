@@ -4,6 +4,7 @@ use leptos::prelude::*;
 
 use crate::features::auth::application::LoginUseCase;
 use crate::features::auth::context::AuthContext;
+use crate::features::auth::ui::PasswordInput;
 use crate::features::auth::AuthHttpRepository;
 
 #[component]
@@ -50,8 +51,9 @@ pub fn LoginForm() -> impl IntoView {
         <form class="mx-auto max-w-md space-y-4 rounded-lg border border-border p-6" on:submit=on_submit>
             <h1 class="text-xl font-semibold">"Login"</h1>
             <div>
-                <label class="mb-1 block text-sm">"E-mail"</label>
+                <label class="mb-1 block text-sm" for="login-email">"E-mail"</label>
                 <input
+                    id="login-email"
                     class="w-full rounded-md border border-border px-3 py-2"
                     type="email"
                     prop:value=move || email.get()
@@ -59,16 +61,7 @@ pub fn LoginForm() -> impl IntoView {
                     required
                 />
             </div>
-            <div>
-                <label class="mb-1 block text-sm">"Senha"</label>
-                <input
-                    class="w-full rounded-md border border-border px-3 py-2"
-                    type="password"
-                    prop:value=move || password.get()
-                    on:input=move |ev| password.set(event_target_value(&ev))
-                    required
-                />
-            </div>
+            <PasswordInput value=password id="login-password".to_string() />
             <Show when=move || error.get().is_some()>
                 <p class="text-sm text-red-600">{move || error.get().unwrap_or_default()}</p>
             </Show>
