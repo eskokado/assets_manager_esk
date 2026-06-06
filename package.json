@@ -1,0 +1,12 @@
+{
+  "name": "assets-manage",
+  "private": true,
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i crates/web-leptos/style/main.css -o crates/web-leptos/style/output.css",
+    "watch:css": "npx @tailwindcss/cli -i crates/web-leptos/style/main.css -o crates/web-leptos/style/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}
