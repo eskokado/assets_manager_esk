@@ -29,13 +29,7 @@ impl AssetHttpRepository {
     }
 
     fn map_asset(dto: AssetDto) -> Result<AssetListItem> {
-        AssetListItem::try_new(
-            dto.id,
-            dto.ticker,
-            dto.name,
-            dto.asset_type,
-            dto.active,
-        )
+        AssetListItem::try_new(dto.id, dto.ticker, dto.name, dto.asset_type, dto.active)
     }
 
     fn map_form(dto: AssetDto) -> Result<AssetForm> {
@@ -66,11 +60,7 @@ impl Default for AssetHttpRepository {
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 impl AssetRepository for AssetHttpRepository {
-    async fn list(
-        &self,
-        access_token: &str,
-        query: ListAssetsQuery,
-    ) -> Result<PaginatedAssetList> {
+    async fn list(&self, access_token: &str, query: ListAssetsQuery) -> Result<PaginatedAssetList> {
         let mut url = match Self::parse_url(&format!("{}/api/assets", self.base_url)) {
             shared_kernel::Result::Ok(value) => value,
             shared_kernel::Result::Err(errors) => return shared_kernel::Result::Err(errors),

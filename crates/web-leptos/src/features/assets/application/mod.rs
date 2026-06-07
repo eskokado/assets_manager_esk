@@ -137,13 +137,16 @@ mod tests {
     async fn list_assets_use_case_returns_items() {
         let use_case = ListAssetsUseCase::new(Arc::new(MockRepo));
         let result = use_case
-            .execute("token", ListAssetsQuery {
-                page: None,
-                limit: None,
-                asset_type: None,
-                active: None,
-                search: None,
-            })
+            .execute(
+                "token",
+                ListAssetsQuery {
+                    page: None,
+                    limit: None,
+                    asset_type: None,
+                    active: None,
+                    search: None,
+                },
+            )
             .await
             .unwrap();
         assert_eq!(result.items.len(), 1);

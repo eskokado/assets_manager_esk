@@ -23,11 +23,7 @@ pub struct PaginatedAssetList {
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 pub trait AssetRepository: Send + Sync {
-    async fn list(
-        &self,
-        access_token: &str,
-        query: ListAssetsQuery,
-    ) -> Result<PaginatedAssetList>;
+    async fn list(&self, access_token: &str, query: ListAssetsQuery) -> Result<PaginatedAssetList>;
     async fn load(&self, access_token: &str, id: &str) -> Result<AssetForm>;
     async fn save(&self, access_token: &str, form: &AssetForm) -> Result<AssetListItem>;
 }
