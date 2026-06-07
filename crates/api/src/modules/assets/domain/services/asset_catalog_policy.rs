@@ -18,8 +18,6 @@ impl AssetCatalogPolicy {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use async_trait::async_trait;
     use uuid::Uuid;
 
@@ -39,12 +37,12 @@ mod tests {
 
     #[tokio::test]
     async fn blocks_deactivation_with_open_position() {
-        let checker = MockChecker {
-            has_position: true,
-        };
-        assert!(AssetCatalogPolicy::ensure_can_deactivate(&checker, Uuid::new_v4())
-            .await
-            .is_err());
+        let checker = MockChecker { has_position: true };
+        assert!(
+            AssetCatalogPolicy::ensure_can_deactivate(&checker, Uuid::new_v4())
+                .await
+                .is_err()
+        );
     }
 
     #[tokio::test]
@@ -52,8 +50,10 @@ mod tests {
         let checker = MockChecker {
             has_position: false,
         };
-        assert!(AssetCatalogPolicy::ensure_can_deactivate(&checker, Uuid::new_v4())
-            .await
-            .is_ok());
+        assert!(
+            AssetCatalogPolicy::ensure_can_deactivate(&checker, Uuid::new_v4())
+                .await
+                .is_ok()
+        );
     }
 }

@@ -46,11 +46,8 @@ impl UseCase<UpdateAssetInput, AssetOut> for UpdateAsset {
 
         if !input.data.active && asset.active() {
             try_domain!(
-                AssetCatalogPolicy::ensure_can_deactivate(
-                    self.position_checker.as_ref(),
-                    input.id
-                )
-                .await
+                AssetCatalogPolicy::ensure_can_deactivate(self.position_checker.as_ref(), input.id)
+                    .await
             );
         }
 

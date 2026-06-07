@@ -54,6 +54,7 @@ impl Asset {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn reconstitute(
         id: EntityId,
         ticker: Ticker,
@@ -82,10 +83,8 @@ impl Asset {
         asset_type: &str,
         currency: Option<&str>,
     ) -> Result<(Ticker, AssetName, AssetType, Currency)> {
-        let (ticker, name) = shared_kernel::try_domain!(combine2(
-            Ticker::try_new(ticker),
-            AssetName::try_new(name)
-        ));
+        let (ticker, name) =
+            shared_kernel::try_domain!(combine2(Ticker::try_new(ticker), AssetName::try_new(name)));
         let asset_type = shared_kernel::try_domain!(AssetType::try_from_str(asset_type));
         let currency = match currency {
             Some(value) => shared_kernel::try_domain!(Currency::try_new(value)),
@@ -107,12 +106,7 @@ impl Asset {
         shared_kernel::Result::ok((name, asset_type, currency))
     }
 
-    pub fn update_details(
-        &mut self,
-        name: AssetName,
-        asset_type: AssetType,
-        currency: Currency,
-    ) {
+    pub fn update_details(&mut self, name: AssetName, asset_type: AssetType, currency: Currency) {
         self.name = name;
         self.asset_type = asset_type;
         self.currency = currency;

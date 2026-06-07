@@ -28,13 +28,7 @@ impl UseCase<CreateAssetIn, AssetOut> for CreateAsset {
             input.currency.as_deref(),
         ));
 
-        if try_domain!(
-            self.repository
-                .find_by_ticker(ticker.as_str())
-                .await
-        )
-        .is_some()
-        {
+        if try_domain!(self.repository.find_by_ticker(ticker.as_str()).await).is_some() {
             return Result::err("Ticker already exists");
         }
 
@@ -55,7 +49,6 @@ mod tests {
     use super::*;
     use crate::modules::assets::application::dto::CreateAssetIn;
     use crate::modules::assets::domain::ports::{AssetFilters, AssetRepository, PaginatedAssets};
-    use crate::modules::assets::domain::{AssetName, AssetType, Currency, Ticker};
 
     struct MockRepo {
         assets: tokio::sync::Mutex<Vec<Asset>>,

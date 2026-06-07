@@ -36,9 +36,7 @@ fn map_errors(errors: &[shared_kernel::DomainError], default_status: StatusCode)
         .join("; ");
     let status = if message.contains("not found") {
         StatusCode::NOT_FOUND
-    } else if message.contains("already exists") {
-        StatusCode::CONFLICT
-    } else if message.contains("open positions") {
+    } else if message.contains("already exists") || message.contains("open positions") {
         StatusCode::CONFLICT
     } else {
         default_status
@@ -89,10 +87,7 @@ pub async fn update_asset(
     Json(input): Json<UpdateAssetIn>,
 ) -> Response {
     let use_case = UpdateAsset::new(asset_repository(&state), position_checker());
-    match use_case
-        .execute(UpdateAssetInput { id, data: input })
-        .await
-    {
+    match use_case.execute(UpdateAssetInput { id, data: input }).await {
         shared_kernel::Result::Ok(out) => Json(out).into_response(),
         shared_kernel::Result::Err(errors) => map_errors(&errors, StatusCode::BAD_REQUEST),
     }

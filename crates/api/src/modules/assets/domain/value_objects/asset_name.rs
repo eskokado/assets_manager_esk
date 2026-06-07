@@ -12,7 +12,9 @@ impl AssetName {
             return Result::err("Asset name is required");
         }
         if value.len() > MAX_LENGTH {
-            return Result::err(format!("Asset name must be at most {MAX_LENGTH} characters"));
+            return Result::err(format!(
+                "Asset name must be at most {MAX_LENGTH} characters"
+            ));
         }
         Result::ok(Self(value.to_string()))
     }

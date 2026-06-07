@@ -67,7 +67,10 @@ async fn assets_admin_crud_and_investor_forbidden() {
 
     let admin_token = login_token(&app, "admin@assets.local", "Senha@12345678").await;
 
-    let ticker = format!("TST{}", &uuid::Uuid::new_v4().to_string()[..4].to_uppercase());
+    let ticker = format!(
+        "TST{}",
+        &uuid::Uuid::new_v4().to_string()[..4].to_uppercase()
+    );
     let create_body = json!({
         "ticker": ticker,
         "name": "Test Asset",

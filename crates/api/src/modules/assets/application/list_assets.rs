@@ -31,11 +31,7 @@ impl UseCase<ListAssetsIn, ListAssetsOut> for ListAssets {
         };
 
         let page_result = try_domain!(self.repository.find_all(filters).await);
-        let items = page_result
-            .items
-            .iter()
-            .map(AssetOut::from_asset)
-            .collect();
+        let items = page_result.items.iter().map(AssetOut::from_asset).collect();
 
         Result::ok(ListAssetsOut {
             items,
