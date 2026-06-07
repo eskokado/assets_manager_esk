@@ -7,7 +7,12 @@ use crate::shared::shell_navigation::main_nav_items;
 #[component]
 pub fn SidebarMenu(open: RwSignal<bool>) -> impl IntoView {
     let auth = AuthContext::use_ctx();
-    let items = Memo::new(move |_| main_nav_items(auth.is_authenticated()));
+    let items = Memo::new(move |_| {
+        let is_admin = auth
+            .session()
+            .with(|s| s.as_ref().is_some_and(|v| v.role() == "admin"));
+        main_nav_items(auth.is_authenticated(), is_admin)
+    });
 
     view! {
         <aside

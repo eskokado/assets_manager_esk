@@ -18,11 +18,12 @@ fn cors_layer() -> CorsLayer {
     CorsLayer::new()
         .allow_origin(AllowOrigin::list([
             "http://localhost:3000".parse().expect("valid origin"),
-            "http://127.0.0.1:3000".parse().expect("valid origin"),
+            "http://127.0.0.1:3001".parse().expect("valid origin"),
         ]))
         .allow_methods(AllowMethods::list([
             Method::GET,
             Method::POST,
+            Method::PUT,
             Method::OPTIONS,
         ]))
         .allow_headers(AllowHeaders::list([
@@ -36,6 +37,7 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .merge(modules::health::routes())
         .merge(modules::auth::interfaces::routes())
+        .merge(modules::assets::interfaces::routes())
         .layer(cors_layer())
         .with_state(state)
 }
