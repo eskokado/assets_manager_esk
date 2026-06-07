@@ -10,6 +10,7 @@ use leptos_config::LeptosOptions;
 
 use crate::features::assets::{AssetFormPage, AssetListPage, RequireAdmin as RequireAdminAssets};
 use crate::features::auth::{AuthProvider, RequireAuth};
+use crate::features::trading::{BuyTradePage, SellTradePage, TradeListPage};
 use crate::layouts::AdminShell;
 use crate::pages::{
     dashboard::DashboardPage, examples::ExamplesPage, login::LoginPage, profile::ProfilePage,
@@ -96,6 +97,21 @@ pub fn App() -> impl IntoView {
                         <AdminShellGuard>
                             <AssetFormPage/>
                         </AdminShellGuard>
+                    }/>
+                    <Route path=path!("/trades") view=move || view! {
+                        <PrivateShell>
+                            <TradeListPage/>
+                        </PrivateShell>
+                    }/>
+                    <Route path=path!("/trades/buy") view=move || view! {
+                        <PrivateShell>
+                            <BuyTradePage/>
+                        </PrivateShell>
+                    }/>
+                    <Route path=path!("/trades/sell") view=move || view! {
+                        <PrivateShell>
+                            <SellTradePage/>
+                        </PrivateShell>
                     }/>
                 </Routes>
             </Router>

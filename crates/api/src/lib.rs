@@ -38,6 +38,7 @@ pub fn router(state: AppState) -> Router {
         .merge(modules::health::routes())
         .merge(modules::auth::interfaces::routes())
         .merge(modules::assets::interfaces::routes())
+        .merge(modules::trading::interfaces::routes())
         .layer(cors_layer())
         .with_state(state)
 }

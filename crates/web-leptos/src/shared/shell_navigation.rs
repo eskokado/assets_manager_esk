@@ -4,7 +4,11 @@ pub struct NavItem {
     pub href: &'static str,
 }
 
-pub fn main_nav_items(include_profile: bool, is_admin: bool) -> Vec<NavItem> {
+pub fn main_nav_items(
+    include_profile: bool,
+    is_admin: bool,
+    include_trading: bool,
+) -> Vec<NavItem> {
     let mut items = vec![
         NavItem {
             label: "Dashboard",
@@ -15,6 +19,12 @@ pub fn main_nav_items(include_profile: bool, is_admin: bool) -> Vec<NavItem> {
             href: "/examples",
         },
     ];
+    if include_trading {
+        items.push(NavItem {
+            label: "Operações",
+            href: "/trades",
+        });
+    }
     if is_admin {
         items.push(NavItem {
             label: "Ativos",
