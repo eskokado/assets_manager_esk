@@ -11,7 +11,12 @@ pub fn SidebarMenu(open: RwSignal<bool>) -> impl IntoView {
         let is_admin = auth
             .session()
             .with(|s| s.as_ref().is_some_and(|v| v.role() == "admin"));
-        main_nav_items(auth.is_authenticated(), is_admin, auth.is_authenticated())
+        main_nav_items(
+            auth.is_authenticated(),
+            is_admin,
+            auth.is_authenticated(),
+            auth.is_authenticated(),
+        )
     });
 
     view! {
