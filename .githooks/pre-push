@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Blocks push when local CI checks fail (fmt, clippy, tests).
+# Enable once: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec "$ROOT/scripts/ci-local.sh"
