@@ -1,17 +1,19 @@
 use leptos::prelude::*;
 
-use crate::features::auth::domain::AuthSession;
+use crate::features::auth::domain::{AuthSession, UserProfile};
 use crate::features::auth::session_storage;
 
 #[derive(Clone, Copy)]
 pub struct AuthContext {
     session: RwSignal<Option<AuthSession>>,
+    profile: RwSignal<Option<UserProfile>>,
 }
 
 impl AuthContext {
     pub fn provide() -> Self {
         let session = RwSignal::new(None::<AuthSession>);
-        let ctx = Self { session };
+        let profile = RwSignal::new(None::<UserProfile>);
+        let ctx = Self { session, profile };
         if let Some(stored) = session_storage::load_session() {
             session.set(Some(stored));
         }
@@ -25,6 +27,10 @@ impl AuthContext {
 
     pub fn session(&self) -> RwSignal<Option<AuthSession>> {
         self.session
+    }
+
+    pub fn profile(&self) -> RwSignal<Option<UserProfile>> {
+        self.profile
     }
 
     pub fn is_authenticated(&self) -> bool {
@@ -44,6 +50,7 @@ impl AuthContext {
     pub fn clear(&self) {
         session_storage::clear_session();
         self.session.set(None);
+        self.profile.set(None);
     }
 }
 
