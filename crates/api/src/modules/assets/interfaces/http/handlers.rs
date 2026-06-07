@@ -15,17 +15,18 @@ use crate::modules::assets::application::{
 };
 use crate::modules::assets::domain::ports::AssetRepository;
 use crate::modules::assets::domain::ports::PositionChecker;
-use crate::modules::assets::infrastructure::{AssetRepositorySqlx, PositionCheckerStub};
+use crate::modules::assets::infrastructure::AssetRepositorySqlx;
 use crate::modules::assets::interfaces::http::middleware::RequireAdmin;
 use crate::modules::auth::interfaces::http::middleware::AuthUser;
+use crate::modules::trading::infrastructure::PositionCheckerSqlx;
 use crate::AppState;
 
 fn asset_repository(state: &AppState) -> Arc<dyn AssetRepository> {
     Arc::new(AssetRepositorySqlx::new(state.db.clone()))
 }
 
-fn position_checker() -> Arc<dyn PositionChecker> {
-    Arc::new(PositionCheckerStub)
+fn position_checker(state: &AppState) -> Arc<dyn PositionChecker> {
+    Arc::new(PositionCheckerSqlx::new(state.db.clone()))
 }
 
 fn map_errors(errors: &[shared_kernel::DomainError], default_status: StatusCode) -> Response {
@@ -86,7 +87,7 @@ pub async fn update_asset(
     Path(id): Path<Uuid>,
     Json(input): Json<UpdateAssetIn>,
 ) -> Response {
-    let use_case = UpdateAsset::new(asset_repository(&state), position_checker());
+    let use_case = UpdateAsset::new(asset_repository(&state), position_checker(&state));
     match use_case.execute(UpdateAssetInput { id, data: input }).await {
         shared_kernel::Result::Ok(out) => Json(out).into_response(),
         shared_kernel::Result::Err(errors) => map_errors(&errors, StatusCode::BAD_REQUEST),
