@@ -8,6 +8,7 @@ use leptos::hydration::{AutoReload, HydrationScripts};
 #[cfg(feature = "ssr")]
 use leptos_config::LeptosOptions;
 
+use crate::features::assets::{AssetFormPage, AssetListPage, RequireAdmin as RequireAdminAssets};
 use crate::features::auth::{AuthProvider, RequireAuth};
 use crate::layouts::AdminShell;
 use crate::pages::{
@@ -44,6 +45,17 @@ fn PrivateShell(children: Children) -> impl IntoView {
 }
 
 #[component]
+fn AdminShellGuard(children: Children) -> impl IntoView {
+    view! {
+        <RequireAuth>
+            <RequireAdminAssets>
+                <AdminShell>{children()}</AdminShell>
+            </RequireAdminAssets>
+        </RequireAuth>
+    }
+}
+
+#[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
@@ -69,6 +81,21 @@ pub fn App() -> impl IntoView {
                         <PrivateShell>
                             <ProfilePage/>
                         </PrivateShell>
+                    }/>
+                    <Route path=path!("/admin/assets") view=move || view! {
+                        <AdminShellGuard>
+                            <AssetListPage/>
+                        </AdminShellGuard>
+                    }/>
+                    <Route path=path!("/admin/assets/new") view=move || view! {
+                        <AdminShellGuard>
+                            <AssetFormPage/>
+                        </AdminShellGuard>
+                    }/>
+                    <Route path=path!("/admin/assets/:id/edit") view=move || view! {
+                        <AdminShellGuard>
+                            <AssetFormPage/>
+                        </AdminShellGuard>
                     }/>
                 </Routes>
             </Router>
