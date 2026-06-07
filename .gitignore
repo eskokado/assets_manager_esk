@@ -6,3 +6,4 @@
 .vscode/
 .cursor/
 node_modules/
+.context/
