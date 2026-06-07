@@ -8,6 +8,7 @@ pub fn main_nav_items(
     include_profile: bool,
     is_admin: bool,
     include_trading: bool,
+    include_portfolio: bool,
 ) -> Vec<NavItem> {
     let mut items = vec![
         NavItem {
@@ -19,6 +20,12 @@ pub fn main_nav_items(
             href: "/examples",
         },
     ];
+    if include_portfolio {
+        items.push(NavItem {
+            label: "Carteira",
+            href: "/portfolio",
+        });
+    }
     if include_trading {
         items.push(NavItem {
             label: "Operações",

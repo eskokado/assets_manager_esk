@@ -1,20 +1,21 @@
 use std::sync::Arc;
 
 use leptos::prelude::*;
-use leptos_router::hooks::use_navigate;
+use leptos_router::components::A;
+use leptos_router::hooks::{use_navigate, use_query_map};
 
-use crate::features::assets::infrastructure::AssetHttpRepository;
-use crate::features::assets::ports::AssetRepository;
 use crate::features::auth::AuthContext;
+use crate::features::portfolio::application::LoadPortfolioUseCase;
+use crate::features::portfolio::infrastructure::PortfolioHttpRepository;
 use crate::features::trading::application::SellAssetUseCase;
 use crate::features::trading::domain::SellTradeForm;
 use crate::features::trading::infrastructure::TradeHttpRepository;
-use crate::features::trading::ports::{ListTradesQuery, TradeRepository};
 
 #[component]
 pub fn SellTradePage() -> impl IntoView {
     let auth = AuthContext::use_ctx();
     let navigate = use_navigate();
+    let query = use_query_map();
     let error = RwSignal::new(None::<String>);
     let loading = RwSignal::new(true);
     let positions = RwSignal::new(Vec::<(String, String, String)>::new());
@@ -29,26 +30,19 @@ pub fn SellTradePage() -> impl IntoView {
             return;
         }
         let token = token.unwrap();
+        let preselected = query
+            .get()
+            .get("assetId")
+            .map(|value| value.to_string())
+            .unwrap_or_default();
         loading.set(true);
 
         leptos::task::spawn_local(async move {
-            let asset_repo = Arc::new(AssetHttpRepository::new());
-            let trade_repo = Arc::new(TradeHttpRepository::new());
+            let portfolio_use_case =
+                LoadPortfolioUseCase::new(Arc::new(PortfolioHttpRepository::new()));
 
-            let assets = match asset_repo
-                .list(
-                    &token,
-                    crate::features::assets::ports::ListAssetsQuery {
-                        page: Some(1),
-                        limit: Some(100),
-                        asset_type: None,
-                        active: None,
-                        search: None,
-                    },
-                )
-                .await
-            {
-                shared_kernel::Result::Ok(page) => page.items,
+            let summary = match portfolio_use_case.execute(&token).await {
+                shared_kernel::Result::Ok(value) => value,
                 shared_kernel::Result::Err(errors) => {
                     error.set(Some(
                         errors
@@ -61,55 +55,34 @@ pub fn SellTradePage() -> impl IntoView {
                     return;
                 }
             };
-
-            let trades = match trade_repo
-                .list(
-                    &token,
-                    ListTradesQuery {
-                        page: Some(1),
-                        limit: Some(500),
-                    },
-                )
-                .await
-            {
-                shared_kernel::Result::Ok(page) => page.items,
-                shared_kernel::Result::Err(errors) => {
-                    error.set(Some(
-                        errors
-                            .iter()
-                            .map(|e| e.0.as_str())
-                            .collect::<Vec<_>>()
-                            .join("; "),
-                    ));
-                    loading.set(false);
-                    return;
-                }
-            };
-
-            let mut balance: std::collections::HashMap<String, f64> =
-                std::collections::HashMap::new();
-            for trade in trades {
-                let qty = trade.quantity().parse::<f64>().unwrap_or(0.0);
-                let entry = balance.entry(trade.ticker().to_string()).or_insert(0.0);
-                if trade.side().eq_ignore_ascii_case("BUY") {
-                    *entry += qty;
-                } else {
-                    *entry -= qty;
-                }
-            }
 
             let mut rows = Vec::new();
-            for asset in assets {
-                let qty = balance.get(asset.ticker()).copied().unwrap_or(0.0);
-                if qty > 0.0 {
-                    rows.push((
-                        asset.id().to_string(),
-                        format!("{} — disponível: {qty}", asset.ticker()),
-                        qty.to_string(),
+            for position in summary.positions() {
+                rows.push((
+                    position.asset_id().to_string(),
+                    format!(
+                        "{} — disponível: {}",
+                        position.ticker(),
+                        position.quantity()
+                    ),
+                    position.quantity().to_string(),
+                ));
+            }
+            positions.set(rows);
+
+            if !preselected.is_empty() {
+                if let Some((_, _, max)) =
+                    positions.get().iter().find(|(id, _, _)| id == &preselected)
+                {
+                    asset_id.set(preselected);
+                    max_quantity.set(max.clone());
+                } else {
+                    error.set(Some(
+                        "Ativo não encontrado na carteira ou sem posição aberta.".into(),
                     ));
                 }
             }
-            positions.set(rows);
+
             loading.set(false);
         });
     });
@@ -171,7 +144,12 @@ pub fn SellTradePage() -> impl IntoView {
 
     view! {
         <div class="mx-auto max-w-lg space-y-4">
-            <h1 class="text-2xl font-semibold">"Vender ativo"</h1>
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold">"Vender ativo"</h1>
+                <A href="/portfolio">
+                    <span class="text-sm text-primary underline">"Ver carteira"</span>
+                </A>
+            </div>
             <Show when=move || loading.get()>
                 <p class="text-sm text-muted-foreground">"Carregando posições..."</p>
             </Show>
@@ -181,6 +159,7 @@ pub fn SellTradePage() -> impl IntoView {
                     <select
                         class="w-full rounded-md border border-border bg-background px-3 py-2"
                         on:change=on_asset_change
+                        prop:value=move || asset_id.get()
                         required
                     >
                         <option value="">"Selecione..."</option>
