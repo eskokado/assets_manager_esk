@@ -156,7 +156,7 @@ async fn portfolio_after_trades_flow() {
     let positions = portfolio_json["positions"].as_array().unwrap();
     assert_eq!(positions.len(), 1);
     assert_eq!(positions[0]["quantity"].as_str().unwrap(), "10");
-    assert_eq!(positions[0]["average_price"].as_str().unwrap(), "25.50");
+    assert_eq!(positions[0]["average_price"].as_str().unwrap(), "25.5");
     assert_eq!(positions[0]["asset_ticker"].as_str().unwrap(), "PETR4");
 
     let detail_response = app

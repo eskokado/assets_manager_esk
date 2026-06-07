@@ -41,10 +41,10 @@ impl PositionOut {
             asset_id: view.position.asset_id().to_string(),
             asset_ticker: view.asset_ticker.clone(),
             asset_name: view.asset_name.clone(),
-            quantity: quantity.to_string(),
-            average_price: average_price.to_string(),
+            quantity: format_decimal(quantity),
+            average_price: format_decimal(average_price),
             currency: view.position.average_price().currency().to_string(),
-            total_invested: total_invested.to_string(),
+            total_invested: format_decimal(total_invested),
         }
     }
 }
@@ -58,8 +58,25 @@ impl PortfolioOut {
             acc + qty * avg
         });
         Self {
-            total_invested: total.to_string(),
+            total_invested: format_decimal(total),
             positions,
         }
+    }
+}
+
+fn format_decimal(value: Decimal) -> String {
+    value.normalize().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use rust_decimal_macros::dec;
+
+    use super::format_decimal;
+
+    #[test]
+    fn format_decimal_strips_trailing_scale_from_db_numeric() {
+        assert_eq!(format_decimal(dec!(10.00000000)), "10");
+        assert_eq!(format_decimal(dec!(25.50000000)), "25.5");
     }
 }
