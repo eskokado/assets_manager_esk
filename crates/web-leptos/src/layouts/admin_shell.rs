@@ -1,8 +1,8 @@
-use leptos::prelude::*;
 use crate::components::{app_footer::AppFooter, sidebar_menu::SidebarMenu};
 use crate::features::auth::application::LoadProfileUseCase;
 use crate::features::auth::context::AuthContext;
 use crate::features::auth::AuthHttpRepository;
+use leptos::prelude::*;
 
 #[component]
 pub fn AdminShell(children: Children) -> impl IntoView {
