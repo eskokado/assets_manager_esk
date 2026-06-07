@@ -36,7 +36,6 @@ pub fn DashboardPage() -> impl IntoView {
                     ListTradesQuery {
                         page: Some(1),
                         limit: Some(5),
-                        ..Default::default()
                     },
                 )
                 .await
