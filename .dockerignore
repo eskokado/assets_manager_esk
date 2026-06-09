@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+.env
+!.env.example
+.idea/
+.vscode/
+node_modules/
+crates/web-leptos/target
